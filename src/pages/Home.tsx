@@ -57,8 +57,9 @@ const JoinInput = styled.input`
   border-radius: 8px;
   border: 1px solid #bbb;
   text-align: center;
-  letter-spacing: 4px;
+
   margin-bottom: 10px;
+  font-size: 14px;
 `;
 const ErrorMsg = styled.div`
   margin-top: 16px;
@@ -139,13 +140,23 @@ function Home() {
       <Title>Ready or Not</Title>
       {!(createdCode || joinOpen) && (
         <ButtonGroup>
-          <Button fullWidth onClick={handleCreateRoom} disabled={loading}>
+          <Button
+            fullWidth
+            onClick={() => {
+              if (navigator.vibrate) navigator.vibrate(80);
+              handleCreateRoom();
+            }}
+            disabled={loading}
+          >
             {loading ? '생성 중...' : '세션 개설'}
           </Button>
           <Button
             fullWidth
             variant="secondary"
-            onClick={() => setJoinOpen(true)}
+            onClick={() => {
+              if (navigator.vibrate) navigator.vibrate(80);
+              setJoinOpen(true);
+            }}
           >
             세션 참가
           </Button>
@@ -158,7 +169,14 @@ function Home() {
           <br />
           <SessionCodeDesc>입장 대기 중</SessionCodeDesc>
           <br />
-          <Button onClick={() => setCreatedCode(null)}>취소</Button>
+          <Button
+            onClick={() => {
+              if (navigator.vibrate) navigator.vibrate(80);
+              setCreatedCode(null);
+            }}
+          >
+            취소
+          </Button>
         </SessionCodeBox>
       )}
       {joinOpen && (
@@ -167,13 +185,16 @@ function Home() {
             value={joinCode}
             onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
             maxLength={4}
-            placeholder="코드 입력"
+            placeholder="Enter Code"
           />
           <div>
             <Button
               fullWidth
               variant="primary"
-              onClick={handleJoin}
+              onClick={() => {
+                if (navigator.vibrate) navigator.vibrate(80);
+                handleJoin();
+              }}
               disabled={joining}
             >
               {joining ? '참가 중...' : '참가'}
@@ -181,7 +202,10 @@ function Home() {
             <Button
               fullWidth
               variant="secondary"
-              onClick={() => setJoinOpen(false)}
+              onClick={() => {
+                if (navigator.vibrate) navigator.vibrate(80);
+                setJoinOpen(false);
+              }}
               style={{ marginTop: 8 }}
             >
               취소

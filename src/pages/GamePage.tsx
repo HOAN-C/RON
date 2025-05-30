@@ -1,11 +1,14 @@
 import { useEffect, useState, useRef } from 'react';
+import { useGameSession } from '../hooks/useGameSession';
 import { useParams, useNavigate } from 'react-router-dom';
 import { db } from '../api/firebase';
-import { ref, onValue, update } from 'firebase/database';
+import { ref, update } from 'firebase/database';
 import styled from 'styled-components';
 import Button from '../components/Button';
-import type { Session } from '../types/session';
-import { playBeep } from './ReadyPage'; // 비프음 함수 import
+
+import { playBeep } from '../utils/playBeep';
+import { getTeamPath, canDecrement, canIncrement } from '../utils/team'; // 팀/버튼 유틸함수 import
+import DeathInputGroup from '../components/DeathInputGroup';
 
 const Container = styled.div`
   min-height: 100vh;
@@ -39,36 +42,6 @@ const Count = styled.span`
   font-weight: bold;
   margin: 0 0.4em;
 `;
-const StyledInputGroup = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 1.1rem;
-`;
-const DeathButton = styled(Button)`
-  font-size: 1.7rem;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  margin: 0 8px;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-const DeathInput = styled.input`
-  width: 64px;
-  padding: 0.5em 0.7em;
-  border-radius: 8px;
-  border: 2px solid #888;
-  background: #232323;
-  color: #fff;
-  font-size: 1.2rem;
-  font-weight: bold;
-  outline: none;
-  text-align: center;
-  margin: 0 8px;
-`;
 const EndButton = styled(Button)<{ $danger: boolean }>`
   margin-top: 2.2rem;
   font-size: 1.15rem;
@@ -82,27 +55,52 @@ const EndButton = styled(Button)<{ $danger: boolean }>`
 `;
 
 function GamePage() {
+  // Wake Lock API
+  const wakeLockRef = useRef<WakeLockSentinel | null>(null);
   const { code } = useParams<{ code: string }>();
   const navigate = useNavigate();
-  const [session, setSession] = useState<Session | null>(null);
+  const session = useGameSession(code ?? null);
   const [ending, setEnding] = useState(false); // 종료 버튼 누르는 중
   const endTimer = useRef<NodeJS.Timeout | null>(null);
+  const myTeam = getTeamPath(code ?? null);
 
-  // 실시간 세션 데이터 구독
-  useEffect(() => {
-    if (!code) return;
-    const sessionRef = ref(db, `${code}`);
-    const unsub = onValue(sessionRef, (snap) => {
-      if (snap.exists()) setSession(snap.val());
-    });
-    return () => unsub();
-  }, [code]);
 
   // 게임 종료 감지(한 팀 전원 사망 또는 state가 ended)
+  const hasNavigatedRef = useRef(false);
   useEffect(() => {
     if (!session) return;
+
+    // 상대가 종료 버튼을 눌러 state가 'ready'로 바뀐 경우(내가 직접 종료한 게 아니어도)
+    if (session.state !== 'running') {
+      // Wake Lock 해제
+      if (wakeLockRef.current) {
+        wakeLockRef.current.release();
+        wakeLockRef.current = null;
+      }
+      // 자동 이동(중복 이동 방지)
+      if (!hasNavigatedRef.current) {
+        hasNavigatedRef.current = true;
+        navigate(`/ready/${code}`);
+      }
+      return;
+    }
+    hasNavigatedRef.current = false;
+    // 게임 진행 시작 시 Wake Lock 활성화
+    if (session.state === 'running' && 'wakeLock' in navigator && !wakeLockRef.current) {
+
+      (navigator as Navigator & { wakeLock: { request: (type: 'screen') => Promise<WakeLockSentinel> } }).wakeLock.request('screen').then((sentinel: WakeLockSentinel) => {
+        wakeLockRef.current = sentinel;
+      }).catch(() => {});
+    }
     // 종료 감지는 게임 진행중(running)일 때만 동작
-    if (session.state !== 'running') return;
+    if (session.state !== 'running') {
+      // Wake Lock 해제
+      if (wakeLockRef.current) {
+        wakeLockRef.current.release();
+        wakeLockRef.current = null;
+      }
+      return;
+    }
     const aAlive = session.teamA.players - session.teamA.casualties;
     const bAlive = session.teamB.players - session.teamB.casualties;
     if (aAlive <= 0 || bAlive <= 0) {
@@ -120,38 +118,32 @@ function GamePage() {
           casualties: 0,
         });
       }
-      // 2. 3초간 연속 비프음 재생
+      // 2. 3초간 연속 비프음 재생 및 진동
       playBeep(3000);
+      if (navigator.vibrate) navigator.vibrate([300, 100, 300, 100, 300]);
       setTimeout(() => {
         // 3. 비프음 끝난 뒤 ReadyPage로 이동
+        // Wake Lock 해제
+        if (wakeLockRef.current) {
+          wakeLockRef.current.release();
+          wakeLockRef.current = null;
+        }
         navigate(`/ready/${code}`);
       }, 3000);
     }
+    // 언마운트 시 Wake Lock 해제
+    return () => {
+      if (wakeLockRef.current) {
+        wakeLockRef.current.release();
+        wakeLockRef.current = null;
+      }
+    };
   }, [session, code, navigate]);
-
-  // 내 팀 판별 (localStorage sessionCode와 code 비교)
-  const isMyTeam = (team: 'teamA' | 'teamB') => {
-    const myCode = localStorage.getItem('sessionCode');
-    if (!myCode || !code) return false;
-    if (team === 'teamA') return myCode === code;
-    if (team === 'teamB') return myCode !== code;
-    return false;
-  };
-
-  // 버튼 활성화 조건 함수
-  const canDecrement = (team: 'teamA' | 'teamB') =>
-    isMyTeam(team) &&
-    session?.state === 'running' &&
-    session[team].casualties > 0;
-  const canIncrement = (team: 'teamA' | 'teamB') =>
-    isMyTeam(team) &&
-    session?.state === 'running' &&
-    session[team].casualties < session[team].players;
 
   // 사망자 증감
   const handleDeathChange = (team: 'teamA' | 'teamB', delta: number) => {
     if (!session || !code) return;
-    if (!isMyTeam(team)) return;
+    if (team !== myTeam) return;
     const teamData = session[team];
     let next = teamData.casualties + delta;
     if (next < 0) next = 0;
@@ -160,6 +152,8 @@ function GamePage() {
     update(ref(db, `${code}/${team}`), {
       casualties: next,
     });
+    // 진동(입력 시)
+    if (navigator.vibrate) navigator.vibrate(80);
   };
 
   // 3초 누르면 게임 종료(자동 종료와 동일하게 처리)
@@ -179,7 +173,13 @@ function GamePage() {
           casualties: 0,
         });
         playBeep(3000);
+        if (navigator.vibrate) navigator.vibrate([300, 100, 300, 100, 300]);
         setTimeout(() => {
+          // Wake Lock 해제
+          if (wakeLockRef.current) {
+            wakeLockRef.current.release();
+            wakeLockRef.current = null;
+          }
           navigate(`/ready/${code}`);
         }, 3000);
       }
@@ -190,8 +190,14 @@ function GamePage() {
     if (endTimer.current) clearTimeout(endTimer.current);
   };
 
+  if (!code) {
+    return <Container>잘못된 접근입니다. (코드 없음)</Container>;
+  }
   if (!session) {
     return <Container>게임 정보를 불러오는 중...</Container>;
+  }
+  if (session === null) {
+    return <Container>세션 정보를 찾을 수 없습니다.</Container>;
   }
   return (
     <Container>
@@ -209,28 +215,14 @@ function GamePage() {
         </InfoRow>
         <InfoRow>
           사망 인원:
-          <StyledInputGroup>
-            <DeathButton
-              variant="secondary"
-              onClick={() => handleDeathChange('teamA', -1)}
-              disabled={!canDecrement('teamA')}
-            >
-              -
-            </DeathButton>
-            <DeathInput
-              type="number"
-              value={session.teamA.casualties}
-              readOnly
-              aria-label="A팀 사망자 수"
-            />
-            <DeathButton
-              variant="danger"
-              onClick={() => handleDeathChange('teamA', 1)}
-              disabled={!canIncrement('teamA')}
-            >
-              +
-            </DeathButton>
-          </StyledInputGroup>
+          <DeathInputGroup
+            casualties={session.teamA.casualties}
+            onDecrement={() => handleDeathChange('teamA', -1)}
+            onIncrement={() => handleDeathChange('teamA', 1)}
+            canDecrement={canDecrement(session, 'teamA', myTeam)}
+            canIncrement={canIncrement(session, 'teamA', myTeam)}
+            teamLabel="A"
+          />
         </InfoRow>
       </TeamBox>
       <TeamBox>
@@ -246,28 +238,14 @@ function GamePage() {
         </InfoRow>
         <InfoRow>
           사망 인원:
-          <StyledInputGroup>
-            <DeathButton
-              variant="secondary"
-              onClick={() => handleDeathChange('teamB', -1)}
-              disabled={!canDecrement('teamB')}
-            >
-              -
-            </DeathButton>
-            <DeathInput
-              type="number"
-              value={session.teamB.casualties}
-              readOnly
-              aria-label="B팀 사망자 수"
-            />
-            <DeathButton
-              variant="danger"
-              onClick={() => handleDeathChange('teamB', 1)}
-              disabled={!canIncrement('teamB')}
-            >
-              +
-            </DeathButton>
-          </StyledInputGroup>
+          <DeathInputGroup
+            casualties={session.teamB.casualties}
+            onDecrement={() => handleDeathChange('teamB', -1)}
+            onIncrement={() => handleDeathChange('teamB', 1)}
+            canDecrement={canDecrement(session, 'teamB', myTeam)}
+            canIncrement={canIncrement(session, 'teamB', myTeam)}
+            teamLabel="B"
+          />
         </InfoRow>
       </TeamBox>
       <EndButton
