@@ -7,8 +7,8 @@ import styled from 'styled-components';
 import Button from '../components/Button';
 import { useWakeLock } from '../hooks/useWakeLock';
 
-import { playBeep } from '../utils/playBeep';
-import { getTeamPath, canDecrement, canIncrement } from '../utils/team'; // 팀/버튼 유틸함수 import
+import { playBeep, initializeAudio } from '../utils/playBeep';
+import { getTeamPath, canDecrement, canIncrement } from '../utils/team';
 import DeathInputGroup from '../components/DeathInputGroup';
 
 const Container = styled.div`
@@ -23,6 +23,7 @@ const Container = styled.div`
   -webkit-user-select: none;
   -ms-user-select: none;
 `;
+
 const TeamBox = styled.div`
   border-radius: 14px;
   background: #23232b;
@@ -31,21 +32,25 @@ const TeamBox = styled.div`
   min-width: 270px;
   box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.08);
 `;
+
 const TeamTitle = styled.h2`
   font-size: 1.2rem;
   font-weight: bold;
   margin-bottom: 0.4rem;
   letter-spacing: 0.04em;
 `;
+
 const InfoRow = styled.div`
   font-size: 1.1rem;
   margin-bottom: 0.3rem;
 `;
+
 const Count = styled.span`
   font-size: 1.5rem;
   font-weight: bold;
   margin: 0 0.4em;
 `;
+
 const EndButton = styled(Button)<{ $danger: boolean }>`
   margin-top: 2.2rem;
   font-size: 1.15rem;
@@ -66,9 +71,39 @@ function GamePage() {
   const navigate = useNavigate();
   const session = useGameSession(code ?? null);
   const [ending, setEnding] = useState(false); // 종료 버튼 누르는 중
+  const [audioInitialized, setAudioInitialized] = useState(false);
   const endTimer = useRef<NodeJS.Timeout | null>(null);
   const myTeam = getTeamPath(code ?? null);
 
+  // Initialize audio on first user interaction
+  useEffect(() => {
+    const handleFirstInteraction = () => {
+      if (!audioInitialized) {
+        const success = initializeAudio();
+        if (success) {
+          setAudioInitialized(true);
+          // Remove event listeners after successful initialization
+          document.removeEventListener('touchstart', handleFirstInteraction);
+          document.removeEventListener('touchend', handleFirstInteraction);
+          document.removeEventListener('click', handleFirstInteraction);
+          document.removeEventListener('keydown', handleFirstInteraction);
+        }
+      }
+    };
+
+    // Add event listeners for first user interaction
+    document.addEventListener('touchstart', handleFirstInteraction, { passive: true });
+    document.addEventListener('touchend', handleFirstInteraction, { passive: true });
+    document.addEventListener('click', handleFirstInteraction);
+    document.addEventListener('keydown', handleFirstInteraction);
+
+    return () => {
+      document.removeEventListener('touchstart', handleFirstInteraction);
+      document.removeEventListener('touchend', handleFirstInteraction);
+      document.removeEventListener('click', handleFirstInteraction);
+      document.removeEventListener('keydown', handleFirstInteraction);
+    };
+  }, [audioInitialized]);
 
   // 게임 종료 감지(한 팀 전원 사망 또는 state가 ended)
   const hasNavigatedRef = useRef(false);
@@ -92,7 +127,6 @@ function GamePage() {
     hasNavigatedRef.current = false;
     // 게임 진행 시작 시 Wake Lock 활성화
     if (session.state === 'running' && 'wakeLock' in navigator && !wakeLockRef.current) {
-
       (navigator as Navigator & { wakeLock: { request: (type: 'screen') => Promise<WakeLockSentinel> } }).wakeLock.request('screen').then((sentinel: WakeLockSentinel) => {
         wakeLockRef.current = sentinel;
       }).catch(() => {});
@@ -124,7 +158,9 @@ function GamePage() {
         });
       }
       // 2. 3초간 연속 비프음 재생 및 진동
-      playBeep(3000);
+      playBeep(3000).catch(() => {
+        console.warn('Failed to play end game beep');
+      });
       if (navigator.vibrate) navigator.vibrate([300, 100, 300, 100, 300]);
       setTimeout(() => {
         // 3. 비프음 끝난 뒤 ReadyPage로 이동
@@ -177,7 +213,9 @@ function GamePage() {
           status: 'not-ready',
           casualties: 0,
         });
-        playBeep(3000);
+        playBeep(3000).catch(() => {
+          console.warn('Failed to play manual end game beep');
+        });
         if (navigator.vibrate) navigator.vibrate([300, 100, 300, 100, 300]);
         setTimeout(() => {
           // Wake Lock 해제
@@ -207,6 +245,12 @@ function GamePage() {
   return (
     <Container>
       <h1>게임 진행</h1>
+      {/* Audio initialization indicator (optional) */}
+      {!audioInitialized && (
+        <div style={{ fontSize: '0.9rem', opacity: 0.7, marginBottom: '1rem' }}>
+          화면을 터치하여 사운드를 활성화하세요
+        </div>
+      )}
       <TeamBox>
         <TeamTitle>팀 A</TeamTitle>
         <InfoRow>
