@@ -5,6 +5,7 @@ import { db } from '../api/firebase';
 import { ref, update } from 'firebase/database';
 import styled from 'styled-components';
 import Button from '../components/Button';
+import { useWakeLock } from '../hooks/useWakeLock';
 
 import { playBeep } from '../utils/playBeep';
 import { getTeamPath, canDecrement, canIncrement } from '../utils/team'; // 팀/버튼 유틸함수 import
@@ -18,6 +19,9 @@ const Container = styled.div`
   align-items: center;
   background: #18181b;
   color: #fff;
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
 `;
 const TeamBox = styled.div`
   border-radius: 14px;
@@ -55,6 +59,7 @@ const EndButton = styled(Button)<{ $danger: boolean }>`
 `;
 
 function GamePage() {
+  useWakeLock();
   // Wake Lock API
   const wakeLockRef = useRef<WakeLockSentinel | null>(null);
   const { code } = useParams<{ code: string }>();

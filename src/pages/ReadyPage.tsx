@@ -13,6 +13,9 @@ const Container = styled.div`
   align-items: center;
   background: #18181b;
   color: #fff;
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
 `;
 
 const SubTitle = styled.h2`
@@ -35,6 +38,43 @@ const Status = styled.div`
   margin-bottom: 1rem;
 `;
 
+// 사운드 테스트 버튼 스타일
+const SoundIconButton = styled.button`
+  position: fixed;
+  right: 28px;
+  bottom: 28px;
+  background: #23232b;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 54px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  cursor: pointer;
+  z-index: 101;
+  transition: background 0.18s;
+  &:active {
+    background: #444;
+  }
+`;
+
+const SoundToast = styled.div`
+  position: fixed;
+  right: 80px;
+  bottom: 28px;
+  background: #222;
+  color: #fff;
+  padding: 7px 18px;
+  border-radius: 20px;
+  font-size: 0.98rem;
+  opacity: 0.95;
+  z-index: 101;
+  pointer-events: none;
+`;
+
 import Countdown from '../components/Countdown';
 
 import { playBeep } from '../utils/playBeep';
@@ -43,8 +83,10 @@ import { useSession } from '../hooks/useSession';
 import { updateSessionField } from '../utils/firebase';
 
 import { useNavigate } from 'react-router-dom';
+import { useWakeLock } from '../hooks/useWakeLock';
 
 const ReadyPage: React.FC = () => {
+  useWakeLock();
   const navigate = useNavigate();
   const [sessionCode, setSessionCode] = useState<string | null>(null);
 
@@ -143,13 +185,12 @@ const ReadyPage: React.FC = () => {
             if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
             // 게임 시작: 세션 상태를 running으로 변경
             update(ref(db, `${sessionCode}`), { state: 'running' });
+            // navigate는 별도 useEffect에서 state === 'running'일 때 실행
             setTimeout(() => {
-              // Wake Lock 해제
               if (wakeLockRef.current) {
                 wakeLockRef.current.release();
                 wakeLockRef.current = null;
               }
-              navigate(`/game/${sessionCode}`);
             }, 100); // 사운드 겹침 방지 약간의 딜레이
             return 0;
           });
@@ -180,12 +221,17 @@ const ReadyPage: React.FC = () => {
     };
   }, [sessionData]);
 
+  // state가 'running'이 되었을 때 GamePage로 이동 (모든 클라이언트 확실하게 이동)
+  useEffect(() => {
+    if (sessionData?.state === 'running') {
+      navigate(`/game/${sessionCode}`);
+    }
+  }, [sessionData?.state, navigate, sessionCode]);
+
   return (
     <Container>
-      <Title>게임 준비</Title>
-      <SubTitle>
-        team {getTeamPath(sessionCode ?? null) === 'teamA' ? 'A' : 'B'}
-      </SubTitle>
+      <SubTitle>게임 준비</SubTitle>
+      <Title>방 코드: {sessionCode}</Title>
       <Status>
         {!sessionCode ? (
           '잘못된 접근입니다. (코드 없음)'
@@ -232,8 +278,36 @@ const ReadyPage: React.FC = () => {
         {ready ? '준비 취소' : '준비 완료'}
       </Button>
       <Countdown value={countdown} />
+      <SoundTestButton />
     </Container>
   );
 };
 
+function SoundTestButton() {
+  const [toast, setToast] = useState(false);
+  function handleClick() {
+    playBeep(200);
+    setToast(true);
+    setTimeout(() => setToast(false), 1200);
+  }
+  return (
+    <>
+      {toast && <SoundToast>소리가 잘 들리나요?</SoundToast>}
+      <SoundIconButton
+        aria-label="사운드 테스트"
+        title="사운드 테스트"
+        onClick={handleClick}
+        tabIndex={0}
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        </svg>
+      </SoundIconButton>
+    </>
+  );
+}
+
 export default ReadyPage;
+
