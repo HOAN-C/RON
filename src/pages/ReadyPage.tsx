@@ -52,7 +52,7 @@ const SoundIconButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
   cursor: pointer;
   z-index: 101;
   transition: background 0.18s;
@@ -230,8 +230,8 @@ const ReadyPage: React.FC = () => {
 
   return (
     <Container>
-      <SubTitle>게임 준비</SubTitle>
-      <Title>방 코드: {sessionCode}</Title>
+      <Title>게임 준비</Title>
+      <SubTitle>{getTeamPath(sessionCode)}</SubTitle>
       <Status>
         {!sessionCode ? (
           '잘못된 접근입니다. (코드 없음)'
@@ -299,7 +299,16 @@ function SoundTestButton() {
         onClick={handleClick}
         tabIndex={0}
       >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#fff"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
           <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
           <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
           <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
@@ -310,4 +319,3 @@ function SoundTestButton() {
 }
 
 export default ReadyPage;
-
