@@ -78,6 +78,7 @@ const SoundToast = styled.div`
 import Countdown from '../components/Countdown';
 
 import { playBeep } from '../utils/playBeep';
+import WalkieTalkieButton from '../components/WalkieTalkieButton';
 import { getTeamPath } from '../utils/team';
 import { useSession } from '../hooks/useSession';
 import { updateSessionField } from '../utils/firebase';
@@ -278,6 +279,14 @@ const ReadyPage: React.FC = () => {
         {ready ? '준비 취소' : '준비 완료'}
       </Button>
       <Countdown value={countdown} />
+      {/* WebRTC Walkie-Talkie Button (floating) */}
+      {sessionCode && (
+        <WalkieTalkieButton
+          sessionCode={sessionCode}
+          signalingPath={`sessions/${sessionCode}/webrtc`}
+          disabled={!sessionData || countdown !== null}
+        />
+      )}
       <SoundTestButton />
     </Container>
   );

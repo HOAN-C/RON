@@ -6,6 +6,7 @@ import { ref, update } from 'firebase/database';
 import styled from 'styled-components';
 import Button from '../components/Button';
 import { useWakeLock } from '../hooks/useWakeLock';
+import WalkieTalkieButton from '../components/WalkieTalkieButton';
 
 import { playBeep } from '../utils/playBeep';
 import { getTeamPath, canDecrement, canIncrement } from '../utils/team'; // 팀/버튼 유틸함수 import
@@ -69,7 +70,6 @@ function GamePage() {
   const endTimer = useRef<NodeJS.Timeout | null>(null);
   const myTeam = getTeamPath(code ?? null);
 
-
   // 게임 종료 감지(한 팀 전원 사망 또는 state가 ended)
   const hasNavigatedRef = useRef(false);
   useEffect(() => {
@@ -91,11 +91,21 @@ function GamePage() {
     }
     hasNavigatedRef.current = false;
     // 게임 진행 시작 시 Wake Lock 활성화
-    if (session.state === 'running' && 'wakeLock' in navigator && !wakeLockRef.current) {
-
-      (navigator as Navigator & { wakeLock: { request: (type: 'screen') => Promise<WakeLockSentinel> } }).wakeLock.request('screen').then((sentinel: WakeLockSentinel) => {
-        wakeLockRef.current = sentinel;
-      }).catch(() => {});
+    if (
+      session.state === 'running' &&
+      'wakeLock' in navigator &&
+      !wakeLockRef.current
+    ) {
+      (
+        navigator as Navigator & {
+          wakeLock: { request: (type: 'screen') => Promise<WakeLockSentinel> };
+        }
+      ).wakeLock
+        .request('screen')
+        .then((sentinel: WakeLockSentinel) => {
+          wakeLockRef.current = sentinel;
+        })
+        .catch(() => {});
     }
     // 종료 감지는 게임 진행중(running)일 때만 동작
     if (session.state !== 'running') {
@@ -269,8 +279,17 @@ function GamePage() {
             ? '3초 유지 시 게임 종료'
             : '게임 종료 (3초 누르기)'}
       </EndButton>
+      {code && session?.state === 'running' && (
+        <WalkieTalkieButton
+          sessionCode={code}
+          signalingPath={`sessions/${code}/webrtc`}
+          disabled={ending}
+        />
+      )}
     </Container>
   );
 }
+
+// import WalkieTalkieButton from './WalkieTalkieButton';
 
 export default GamePage;
