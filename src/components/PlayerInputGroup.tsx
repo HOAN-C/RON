@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import Button from './Button';
-import React from 'react';
 
 interface PlayerInputGroupProps {
   value: number;
@@ -65,7 +64,7 @@ const PlayerInputGroup: React.FC<PlayerInputGroupProps> = ({ value, setValue, di
       min={0}
       max={100}
       value={value}
-      onChange={e => setValue(Number(e.target.value))}
+      onChange={(e) => setValue(Number(e.target.value))}
       placeholder="내 팀 인원 입력"
       disabled={disabled}
     />

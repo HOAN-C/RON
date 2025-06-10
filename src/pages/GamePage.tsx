@@ -3,66 +3,14 @@ import { useGameSession } from '../hooks/useGameSession';
 import { useParams, useNavigate } from 'react-router-dom';
 import { db } from '../api/firebase';
 import { ref, update } from 'firebase/database';
-import styled from 'styled-components';
-import Button from '../components/Button';
+import { Container, TeamBox, TeamTitle, InfoRow, Count, EndButton } from './GamePage.styled';
+
 import { useWakeLock } from '../hooks/useWakeLock';
 import WalkieTalkieButton from '../components/WalkieTalkieButton';
 
 import { playBeep, initializeAudio } from '../utils/playBeep';
 import { getTeamPath, canDecrement, canIncrement } from '../utils/team';
 import DeathInputGroup from '../components/DeathInputGroup';
-
-const Container = styled.div`
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background: #18181b;
-  color: #fff;
-  user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
-`;
-
-const TeamBox = styled.div`
-  border-radius: 14px;
-  background: #23232b;
-  padding: 1.1rem 1.6rem 1.2rem 1.6rem;
-  margin: 1.2rem 0;
-  min-width: 270px;
-  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.08);
-`;
-
-const TeamTitle = styled.h2`
-  font-size: 1.2rem;
-  font-weight: bold;
-  margin-bottom: 0.4rem;
-  letter-spacing: 0.04em;
-`;
-
-const InfoRow = styled.div`
-  font-size: 1.1rem;
-  margin-bottom: 0.3rem;
-`;
-
-const Count = styled.span`
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin: 0 0.4em;
-`;
-
-const EndButton = styled(Button)<{ $danger: boolean }>`
-  margin-top: 2.2rem;
-  font-size: 1.15rem;
-  padding: 1.1em 2.3em;
-  border-radius: 10px;
-  background: ${({ $danger }) => ($danger ? '#ef4444' : '#2563eb')};
-  color: #fff;
-  border: none;
-  font-weight: bold;
-  transition: background 0.18s;
-`;
 
 function GamePage() {
   useWakeLock();
@@ -127,11 +75,7 @@ function GamePage() {
     }
     hasNavigatedRef.current = false;
     // 게임 진행 시작 시 Wake Lock 활성화
-    if (
-      session.state === 'running' &&
-      'wakeLock' in navigator &&
-      !wakeLockRef.current
-    ) {
+    if (session.state === 'running' && 'wakeLock' in navigator && !wakeLockRef.current) {
       (
         navigator as Navigator & {
           wakeLock: { request: (type: 'screen') => Promise<WakeLockSentinel> };
@@ -157,14 +101,14 @@ function GamePage() {
     if (aAlive <= 0 || bAlive <= 0) {
       // 1. DB에서 두 팀 status를 not-ready로 변경
       if (code) {
-        update(ref(db, `${code}`), {
+        update(ref(db, `sessions/${code}`), {
           state: 'ready',
         });
-        update(ref(db, `${code}/teamA`), {
+        update(ref(db, `sessions/${code}/teamA`), {
           status: 'not-ready',
           casualties: 0,
         });
-        update(ref(db, `${code}/teamB`), {
+        update(ref(db, `sessions/${code}/teamB`), {
           status: 'not-ready',
           casualties: 0,
         });
@@ -202,7 +146,7 @@ function GamePage() {
     if (next < 0) next = 0;
     if (next > teamData.players) next = teamData.players;
     if (next === teamData.casualties) return;
-    update(ref(db, `${code}/${team}`), {
+    update(ref(db, `sessions/${code}/${team}`), {
       casualties: next,
     });
     // 진동(입력 시)
@@ -214,14 +158,14 @@ function GamePage() {
     setEnding(true);
     endTimer.current = setTimeout(() => {
       if (code) {
-        update(ref(db, `${code}`), {
+        update(ref(db, `sessions/${code}`), {
           state: 'ready',
         });
-        update(ref(db, `${code}/teamA`), {
+        update(ref(db, `sessions/${code}/teamA`), {
           status: 'not-ready',
           casualties: 0,
         });
-        update(ref(db, `${code}/teamB`), {
+        update(ref(db, `sessions/${code}/teamB`), {
           status: 'not-ready',
           casualties: 0,
         });
@@ -269,10 +213,7 @@ function GamePage() {
           시작 인원: <Count>{session.teamA.players}</Count>
         </InfoRow>
         <InfoRow>
-          생존 인원:{' '}
-          <Count>
-            {Math.max(0, session.teamA.players - session.teamA.casualties)}
-          </Count>
+          생존 인원: <Count>{Math.max(0, session.teamA.players - session.teamA.casualties)}</Count>
         </InfoRow>
         <InfoRow>
           사망 인원:
@@ -292,10 +233,7 @@ function GamePage() {
           시작 인원: <Count>{session.teamB.players}</Count>
         </InfoRow>
         <InfoRow>
-          생존 인원:{' '}
-          <Count>
-            {Math.max(0, session.teamB.players - session.teamB.casualties)}
-          </Count>
+          생존 인원: <Count>{Math.max(0, session.teamB.players - session.teamB.casualties)}</Count>
         </InfoRow>
         <InfoRow>
           사망 인원:
@@ -326,11 +264,7 @@ function GamePage() {
             : '게임 종료 (3초 누르기)'}
       </EndButton>
       {code && session?.state === 'running' && (
-        <WalkieTalkieButton
-          sessionCode={code}
-          signalingPath={`sessions/${code}/webrtc`}
-          disabled={ending}
-        />
+        <WalkieTalkieButton sessionCode={code} signalingPath={`sessions/${code}/webrtc`} disabled={ending} />
       )}
     </Container>
   );

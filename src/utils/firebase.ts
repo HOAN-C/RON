@@ -12,7 +12,7 @@ import { db } from '../api/firebase';
  */
 export async function updateSessionField(code: string, field: string, value: Record<string, unknown>) {
   try {
-    await update(ref(db, `${code}/${field}`), value);
+    await update(ref(db, `sessions/${code}/${field}`), value);
   } catch (err) {
     alert('데이터 저장에 실패했습니다.');
     throw err;

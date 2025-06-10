@@ -21,7 +21,7 @@ const FloatButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
   cursor: pointer;
   z-index: 120;
   font-size: 1.6rem;
@@ -61,7 +61,7 @@ export default function WalkieTalkieButton({ sessionCode, signalingPath, disable
       setIsTransmitting(true);
       await sendStream(stream);
     } catch (e) {
-      alert('마이크 권한이 필요합니다.');
+      alert(`${e}: 마이크 권한이 필요합니다.`);
     }
   }
 
@@ -72,7 +72,7 @@ export default function WalkieTalkieButton({ sessionCode, signalingPath, disable
    */
   function stopTransmit() {
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current.getTracks().forEach((track) => track.stop());
       streamRef.current = null;
     }
     setIsTransmitting(false);
@@ -94,16 +94,35 @@ export default function WalkieTalkieButton({ sessionCode, signalingPath, disable
       onMouseUp={stopTransmit}
       onMouseLeave={stopTransmit}
       onTouchEnd={stopTransmit}
-      style={{ background: isTransmitting ? '#ef4444' : (state === 'connected' ? '#2563eb' : '#888') }}
+      style={{
+        background: isTransmitting ? '#ef4444' : state === 'connected' ? '#2563eb' : '#888',
+      }}
     >
       {/* 무전기 아이콘 SVG */}
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg
+        width="28"
+        height="28"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#fff"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <rect x="9" y="2" width="6" height="11" rx="3" />
         <path d="M12 13v9" />
         <path d="M8 22h8" />
       </svg>
       {/* 상태 텍스트 */}
-      <span style={{ position: 'absolute', top: -30, right: 0, color: '#fff', fontSize: 13 }}>
+      <span
+        style={{
+          position: 'absolute',
+          top: -30,
+          right: 0,
+          color: '#fff',
+          fontSize: 13,
+        }}
+      >
         {state === 'connecting' && '연결 중...'}
         {state === 'connected' && isTransmitting && '송출 중'}
       </span>

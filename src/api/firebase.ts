@@ -1,3 +1,5 @@
+// [API] Firebase RTDB 초기화 및 DB 인스턴스 export
+// - Firebase 앱 및 데이터베이스 인스턴스 설정 및 내보내기
 import { initializeApp } from 'firebase/app';
 import { getDatabase } from 'firebase/database';
 

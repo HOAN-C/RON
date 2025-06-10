@@ -4,6 +4,8 @@ import { db } from '../api/firebase';
 
 export type WebRTCPeerState = 'idle' | 'connecting' | 'connected' | 'error';
 
+// [Hook] WebRTC 오디오 연결 및 Firebase RTDB 시그널링 커스텀 훅
+// - 두 참가자 간 WebRTC 오디오 연결 및 시그널링 데이터(Firebase RTDB) 관리
 /**
  * useWebRTCPeer
  * - 두 참가자 간 WebRTC 오디오 연결을 위한 커스텀 React 훅

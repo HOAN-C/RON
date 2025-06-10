@@ -7,6 +7,11 @@ import type { Session } from '../types/session';
  */
 export function getTeamPath(sessionCode: string | null): 'teamA' | 'teamB' {
   const hostSessionCode = localStorage.getItem('sessionCode');
+  console.log('getTeamPath:', {
+    sessionCode,
+    hostSessionCode,
+    isTeamA: sessionCode === hostSessionCode
+  });
   if (sessionCode === hostSessionCode) return 'teamA';
   return 'teamB';
 }

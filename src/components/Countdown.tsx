@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import React from 'react';
 
 const CountdownWrapper = styled.div`
   font-size: 2rem;
@@ -11,9 +10,9 @@ interface CountdownProps {
   value: number | null;
 }
 
-const Countdown: React.FC<CountdownProps> = ({ value }) => {
+function Countdown({ value }: CountdownProps) {
   if (value === null) return null;
   return <CountdownWrapper>{value}</CountdownWrapper>;
-};
+}
 
 export default Countdown;
