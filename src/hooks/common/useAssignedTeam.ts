@@ -1,4 +1,4 @@
-import useSessionCode from './useSessionCode';
+import { useSessionCode } from './useSessionCode';
 import type { Session } from '../../types/sessionType';
 
 type TeamType = keyof Session['teams'];
@@ -7,7 +7,7 @@ type TeamType = keyof Session['teams'];
  * 현재 URL의 sessionCode와 localStorage를 기반으로 호스트이면 teamA, 아니면 teamB
  * @returns 'teamA' | 'teamB'
  */
-export default function useAssignedTeam(): TeamType {
+export function useAssignedTeam(): TeamType {
   const sessionCode = useSessionCode();
   const storedCode = localStorage.getItem('sessionCode');
 

@@ -1,10 +1,10 @@
 import { Container, TeamContainer, TeamCircle, TeamPlayerCount } from './TeamStatus.styled';
-import useTeam from '../../hooks/common/useAssignedTeam';
+import { useAssignedTeam } from '../../hooks/common/useAssignedTeam';
 
 import type { Team } from '../../types/teamType';
 
-export default function TeamStatus({ teamsData }: { teamsData: { teamA: Team; teamB: Team } | null }) {
-  const myTeam = useTeam();
+export function TeamStatus({ teamsData }: { teamsData: { teamA: Team; teamB: Team } | null }) {
+  const myTeam = useAssignedTeam();
 
   return (
     <Container>

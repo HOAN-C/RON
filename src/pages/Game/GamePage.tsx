@@ -2,22 +2,21 @@ import { useState, useEffect } from 'react';
 
 import { Container, Title } from './GamePage.styled';
 // import Time from '../../components/Game/Time';
-import TeamStatus from '../../components/Game/TeamStatus';
-import PlayerInput from '../../components/Game/CasualtiesInput';
-import Button from '../../components/common/Button';
-import EndModal from '../../components/Game/EndModal';
-
-import useTeam from '../../hooks/common/useAssignedTeam';
-import useSubscribeTeams from '../../hooks/team/useSubscribeTeams';
-import useSessionCode from '../../hooks/common/useSessionCode';
-import useSubscribeSession from '../../hooks/session/useSubscribeSession';
+import { TeamStatus } from '../../components/Game/TeamStatus';
+import { CasualtiesInput } from '../../components/Game/CasualtiesInput';
+import { Button } from '../../components/common/Button';
+import { EndModal } from '../../components/Game/EndModal';
+import { useAssignedTeam } from '../../hooks/common/useAssignedTeam';
+import { useSubscribeTeams } from '../../hooks/team/useSubscribeTeams';
+import { useSessionCode } from '../../hooks/common/useSessionCode';
+import { useSubscribeSession } from '../../hooks/session/useSubscribeSession';
 import { useEndGame } from '../../hooks/session/useEndGame';
 import { playBeep } from '../../utils/playBeep';
 import { useNavigate } from 'react-router-dom';
 
 export default function GamePage() {
   const code = useSessionCode();
-  const team = useTeam();
+  const team = useAssignedTeam();
   const navigate = useNavigate();
   const sessionData = useSubscribeSession();
   const teamsData = useSubscribeTeams();
@@ -73,9 +72,8 @@ export default function GamePage() {
   return (
     <Container>
       <Title $teampath={team}>G A M E</Title>
-      {/* <Time /> */}
       <TeamStatus teamsData={teamsData} />
-      <PlayerInput teamData={teamsData[team]} />
+      <CasualtiesInput teamData={teamsData![team]} />
       <Button fullWidth onClick={handleEndGame}>
         게임 종료
       </Button>

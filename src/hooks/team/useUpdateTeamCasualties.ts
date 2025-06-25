@@ -1,11 +1,11 @@
 import { useCallback } from 'react';
 import { updateTeamAPI } from '../../api/teamAPI';
-import useSessionCode from '../common/useSessionCode';
-import useTeam from '../common/useAssignedTeam';
+import { useSessionCode } from '../common/useSessionCode';
+import { useAssignedTeam } from '../common/useAssignedTeam';
 
-export default function useUpdateTeamCasualties() {
+export function useUpdateTeamCasualties() {
   const code = useSessionCode();
-  const team = useTeam();
+  const team = useAssignedTeam();
 
   const updateTeamCasualties = useCallback(
     async (casualties: number): Promise<boolean> => {

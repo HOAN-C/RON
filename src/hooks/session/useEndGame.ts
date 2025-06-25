@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { updateTeamAPI } from '../../api/teamAPI';
 import { updateSessionAPI } from '../../api/sessionAPI';
-import useSessionCode from '../common/useSessionCode';
+import { useSessionCode } from '../common/useSessionCode';
 import { SESSION_STATE } from '../../constants/session';
 import { TEAM_STATUS } from '../../constants/team';
 

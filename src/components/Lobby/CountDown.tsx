@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useSessionCode from '../../hooks/common/useSessionCode';
-import useStartGameSession from '../../hooks/session/useGameStartSession';
+import { useSessionCode } from '../../hooks/common/useSessionCode';
+import { useGameStartSession } from '../../hooks/session/useGameStartSession';
 import { playBeep } from '../../utils/playBeep';
 import styled from 'styled-components';
 
@@ -46,11 +46,11 @@ const ProgressBar = styled.div`
   }
 `;
 
-export default function CountDown() {
+export function CountDown() {
   const [count, setCount] = useState(COUNTDOWN_SECONDS);
   const navigate = useNavigate();
   const code = useSessionCode();
-  const { gameStartSession } = useStartGameSession();
+  const { gameStartSession } = useGameStartSession();
 
   useEffect(() => {
     if (count === 0) {

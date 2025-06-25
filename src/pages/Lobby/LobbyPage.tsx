@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react';
-import useTeam from '../../hooks/common/useAssignedTeam';
-import useSubscribeTeams from '../../hooks/team/useSubscribeTeams';
+import { useAssignedTeam } from '../../hooks/common/useAssignedTeam';
+import { useSubscribeTeams } from '../../hooks/team/useSubscribeTeams';
 import { useChangeTeamStatus } from '../../hooks/team/useChangeTeamStatus';
 
 import { Container, Title, ContentsContainer } from './LobbyPage.styled';
-import TeamStatus from '../../components/Lobby/TeamStatus';
-import PlayerInput from '../../components/Lobby/PlayerInput';
-import Button from '../../components/common/Button';
-import CountDown from '../../components/Lobby/CountDown';
+import { TeamStatus } from '../../components/Lobby/TeamStatus';
+import { PlayerInput } from '../../components/Lobby/PlayerInput';
+import { Button } from '../../components/common/Button';
+import { CountDown } from '../../components/Lobby/CountDown';
 
 import type { Team } from '../../types/teamType';
 
 export default function LobbyPage() {
-  const team = useTeam();
+  const team = useAssignedTeam();
   const teamsData = useSubscribeTeams(); // 팀 상태 구독
 
   const { changeTeamStatus } = useChangeTeamStatus();

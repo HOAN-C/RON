@@ -52,7 +52,7 @@ const StyledButton = styled.button<{
   }
 `;
 
-const Button = forwardRef<HTMLButtonElement, ButtonProps>(({ children, variant = 'primary', fullWidth = false, ...props }, ref) => {
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({ children, variant = 'primary', fullWidth = false, ...props }, ref) => {
   return (
     <StyledButton ref={ref} $variant={variant} $fullWidth={fullWidth} {...props}>
       {children}
@@ -61,4 +61,3 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(({ children, variant =
 });
 
 Button.displayName = 'Button';
-export default Button;

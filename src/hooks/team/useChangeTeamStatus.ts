@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
 import { updateTeamAPI, getTeamAPI } from '../../api/teamAPI';
-import useSessionCode from '../common/useSessionCode';
+import { useSessionCode } from '../common/useSessionCode';
 import { TEAM_STATUS } from '../../constants/team';
-import useAssignedTeam from '../common/useAssignedTeam';
+import { useAssignedTeam } from '../common/useAssignedTeam';
 
 export const useChangeTeamStatus = () => {
   const code = useSessionCode();

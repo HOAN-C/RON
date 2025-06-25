@@ -17,7 +17,7 @@ const SubTitle = styled.h2`
   margin-bottom: 20px;
   letter-spacing: 0.2em;
 `;
-const MainTitle = () => {
+export function MainTitle() {
   return (
     <div>
       <Title>RON</Title>
@@ -28,6 +28,4 @@ const MainTitle = () => {
       </SubTitle>
     </div>
   );
-};
-
-export default MainTitle;
+}

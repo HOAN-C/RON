@@ -1,8 +1,8 @@
-import useSessionCode from '../common/useSessionCode';
+import { useSessionCode } from '../common/useSessionCode';
 import { updateSessionAPI } from '../../api/sessionAPI';
 import { SESSION_STATE } from '../../constants/session';
 
-export default function useGameStartSession() {
+export function useGameStartSession() {
   const code = useSessionCode();
 
   const gameStartSession = async () => {
