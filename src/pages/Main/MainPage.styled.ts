@@ -84,5 +84,5 @@ export const CodeInput = styled.input`
 export const ErrorMsg = styled.div`
   font-size: 0.95rem;
   font-weight: 400;
-  color: ${({ theme }) => theme.colors.team.b};
+  color: ${({ theme }) => theme.colors.team.a};
 `;
