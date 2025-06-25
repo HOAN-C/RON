@@ -1,4 +1,3 @@
-// Firebase RTDB 데이터 모델 타입 정의 예시
 import type { Team } from './teamType';
 
 export interface Session {

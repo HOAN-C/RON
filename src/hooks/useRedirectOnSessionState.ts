@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { subscribeSessionAPI } from '../api/session';
+import { subscribeSessionAPI } from '../api/sessionAPI';
 import { useNavigate } from 'react-router-dom';
 
 //세션 상태에 따라 페이지 이동하는 함수

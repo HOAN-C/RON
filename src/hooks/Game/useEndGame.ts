@@ -1,19 +1,27 @@
 import { useCallback } from 'react';
-import { updateSessionAPI } from '../../api/session';
-import { useSessionCode } from '../useSessionCode';
+import { updateTeamAPI } from '../../api/teamAPI';
+import { updateSessionAPI } from '../../api/sessionAPI';
+import { useSessionCode } from '../common/useSessionCode';
 
-//세션상태 ready로 변경하는 함수
+// 세션 상태 ready로 변경 (players 수치는 유지)
 export const useEndGame = () => {
   const code = useSessionCode();
+
   const endGame = useCallback(async (): Promise<boolean> => {
     try {
       await updateSessionAPI(code, {
         state: 'ready',
-        'teams/teamA/status': 'not-ready' as const,
-        'teams/teamA/casualties': 0,
-        'teams/teamB/status': 'not-ready' as const,
-        'teams/teamB/casualties': 0,
-      } as any); // Firebase는 중첩 경로를 지원하지만 TypeScript 타입을 위해 any 사용
+      });
+
+      await updateTeamAPI(code, 'teamA', {
+        status: 'not-ready',
+        casualties: 0,
+      });
+
+      await updateTeamAPI(code, 'teamB', {
+        status: 'not-ready',
+        casualties: 0,
+      });
 
       return true;
     } catch (error) {

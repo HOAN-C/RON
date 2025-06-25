@@ -1,12 +1,23 @@
-import { getSessionAPI, createSessionAPI } from '../../api/session';
+import { serverTimestamp } from 'firebase/database';
+import { getSessionAPI, setSessionAPI } from '../../api/sessionAPI';
 
 import { useCallback } from 'react';
 import { generateSessionCode } from '../../utils/generateSessionCode';
+import type { Session } from '../../types/sessionType';
 
 interface CreateSessionResult {
   sessionCode: string;
   error?: string;
 }
+
+const initialSession: Session = {
+  teams: {
+    teamA: { status: 'not-ready', casualties: 0, players: 0 },
+    teamB: { status: 'not-ready', casualties: 0, players: 0 },
+  },
+  state: 'waiting',
+  createdAt: serverTimestamp(),
+};
 
 //세션 생성하는 함수
 //TODO: 로직 최적화
@@ -16,7 +27,7 @@ export const useCreateSession = () => {
       // 기존에 사용한 방이 있는지
       const storedCode = localStorage.getItem('sessionCode');
       if (storedCode) {
-        await createSessionAPI(storedCode); //새 세션 생성
+        await setSessionAPI(storedCode, initialSession); //새 세션 생성
         return { sessionCode: storedCode };
       }
 
@@ -27,7 +38,7 @@ export const useCreateSession = () => {
         newCode = generateSessionCode();
       }
       //해당 코드의 세션이 없으면 새로 생성
-      await createSessionAPI(newCode); //새 세션 생성
+      await setSessionAPI(newCode, initialSession); //새 세션 생성
       localStorage.setItem('sessionCode', newCode);
 
       return { sessionCode: newCode };

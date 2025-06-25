@@ -1,5 +1,5 @@
-import { useSessionCode } from './useSessionCode';
-import { updateSessionAPI } from '../api/session';
+import { useSessionCode } from './common/useSessionCode';
+import { updateSessionAPI } from '../api/sessionAPI';
 
 export default function useStartGameSession() {
   const code = useSessionCode();

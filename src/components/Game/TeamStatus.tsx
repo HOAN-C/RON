@@ -1,5 +1,5 @@
 import { Container, TeamContainer, TeamCircle, TeamPlayerCount } from './TeamStatus.styled';
-import useTeam from '../../hooks/useTeam';
+import useTeam from '../../hooks/common/useAssignedTeam';
 
 import type { Team } from '../../types/teamType';
 

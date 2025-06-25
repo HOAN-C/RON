@@ -1,8 +1,7 @@
 import styled from 'styled-components';
 import Button from '../common/Button';
 import type { Team } from '../../types/teamType';
-import useTeam from '../../hooks/useTeam';
-import { useTeamApi } from '../../api/team';
+import { useUpdateTeamCasualties } from '../../hooks/Game/useUpdateTeamCasualties';
 import { playBeep } from '../../utils/playBeep';
 
 interface CasualtiesInputProps {
@@ -20,15 +19,13 @@ const Container = styled.div`
 `;
 
 export default function CasualtiesInput({ teamData }: CasualtiesInputProps) {
-  const team = useTeam();
-
-  const { updateTeamCasualtiesAPI } = useTeamApi();
+  const { updateTeamCasualties } = useUpdateTeamCasualties();
 
   const handlePlayerChange = async (diff: number) => {
     playBeep(0.1, 0.03);
     const currentPlayerCount = teamData!.casualties;
     const newPlayerCount = Math.max(0, Math.min(99, currentPlayerCount + diff));
-    await updateTeamCasualtiesAPI(team, newPlayerCount);
+    await updateTeamCasualties(newPlayerCount);
   };
 
   return (

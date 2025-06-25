@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSessionCode } from '../../hooks/useSessionCode';
+import { useSessionCode } from '../../hooks/common/useSessionCode';
 import useStartGameSession from '../../hooks/useStartGameSession';
 import { playBeep } from '../../utils/playBeep';
 import styled from 'styled-components';

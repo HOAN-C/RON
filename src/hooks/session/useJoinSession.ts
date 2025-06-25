@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { getSessionAPI, updateSessionAPI } from '../../api/session';
+import { getSessionAPI, updateSessionAPI } from '../../api/sessionAPI';
 
 export type JoinSessionResult = 'success' | 'not_found' | 'error' | 'session_full';
 
