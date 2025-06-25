@@ -1,54 +1,85 @@
-# React + TypeScript + Vite
+# RON (Ready Or Not)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+사용자들이 실시간으로 게임 준비 상태를 공유하고, 게임을 자동으로 시작 및 종료할 수 있도록 지원합니다.
 
-Currently, two official plugins are available:
+## 기능
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- ✅ 4자리 코드로 방 생성 및 참여
+- ✅ 실시간 준비 상태 동기화
+- ✅ 5초 카운트다운 후 자동 게임 시작
+- ✅ 각 팀의 전사자 수 동가화
+- ✅ 전원 전사 시 자동 게임 종료
+- ✅ 게임 종료 후 자동 재시작 대기 상태 전환
+- ✅ Wake Lock API로 화면 꺼짐 방지
+- ✅ PWA 지원 (홈 화면 추가 가능)
 
-## Expanding the ESLint configuration
+## 기술 스택
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- React
+- TypeScript
+- Vite
+- Firebase Realtime Database
+- Styled Components
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## 프로젝트 구조
+
+```
+src/
+├── api/          # Firebase API 호출
+├── components/   # 재사용 가능한 컴포넌트
+├── constants/    # 상수 정의
+├── hooks/        # 커스텀 훅
+├── pages/        # 페이지 컴포넌트
+├── styles/       # 전역 스타일 및 테마
+├── types/        # TypeScript 타입 정의
+└── utils/        # 유틸리티 함수
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🧱 데이터 구조
 
-```js
+```ts
+export interface TeamData {
+  status: 'ready' | 'not-ready';
+  casualties: number;
+  players: number;
+}
+
+export interface Session {
+  teams: {
+    teamA: TeamData;
+    teamB: TeamData;
+  };
+  state: 'empty' | 'waiting' | 'ready' | 'running';
+  createdAt: number;
+}
+```
+
+## 📝 TODO
+
+    - 무전기 기능
+    - 게임 로그 저장
+    - UI 애니메이션 추가
+    - 사용자 이름 기능
+
+MIT
 // eslint.config.js
 import reactX from 'eslint-plugin-react-x'
 import reactDom from 'eslint-plugin-react-dom'
 
 export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
+plugins: {
+// Add the react-x and react-dom plugins
+'react-x': reactX,
+'react-dom': reactDom,
+},
+rules: {
+// other rules...
+// Enable its recommended typescript rules
+...reactX.configs['recommended-typescript'].rules,
+...reactDom.configs.recommended.rules,
+},
 })
+
+```
+
 ```

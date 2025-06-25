@@ -9,7 +9,7 @@ export function useSubscribeTeams() {
 
   useEffect(() => {
     const unsubscribe = subscribeSessionAPI(code, session => {
-      console.log('[useSubscribeTeams]Session data:', session);
+      // console.log('[useSubscribeTeams]Session data:', session);
       setTeams(session?.teams || null);
     });
     return () => unsubscribe(); // 구독 해제
