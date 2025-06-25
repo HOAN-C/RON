@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useCreateSession } from '../../hooks/Main/useCreateSession';
-import { useCloseSession } from '../../hooks/Main/useCloseSession';
-import { useJoinSession } from '../../hooks/Main/useJoinSession';
-import { useRedirectOnSessionState } from '../../hooks/useRedirectOnSessionState';
+import { useCreateSession } from '../../hooks/session/useCreateSession';
+import { useCloseSession } from '../../hooks/session/useCloseSession';
+import { useJoinSession } from '../../hooks/session/useJoinSession';
+import { useRedirectOnSessionState } from '../../hooks/common/useRedirectOnSessionState';
 
 import { Container, ContentsContainer, ButtonContainer, CreateContainer, SessionCode, SessionCodeDesc, JoinContainer, CodeInput, ErrorMsg } from './MainPage.styled';
-import Button from '../../components/common/Button';
-import MainTitle from '../../components/Main/MainTitle';
+import { Button } from '../../components/common/Button';
+import { MainTitle } from '../../components/Main/MainTitle';
 
 export default function MainPage() {
   const navigate = useNavigate();

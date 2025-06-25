@@ -2,22 +2,21 @@ import { useState, useEffect } from 'react';
 
 import { Container, Title } from './GamePage.styled';
 // import Time from '../../components/Game/Time';
-import TeamStatus from '../../components/Game/TeamStatus';
-import PlayerInput from '../../components/Game/CasualtiesInput';
-import Button from '../../components/common/Button';
-import EndModal from '../../components/Game/EndModal';
-
-import useTeam from '../../hooks/useTeam';
-import useSubscribeTeams from '../../hooks/Lobby/useSubscribeTeams';
+import { TeamStatus } from '../../components/Game/TeamStatus';
+import { CasualtiesInput } from '../../components/Game/CasualtiesInput';
+import { Button } from '../../components/common/Button';
+import { EndModal } from '../../components/Game/EndModal';
+import { useAssignedTeam } from '../../hooks/common/useAssignedTeam';
+import { useSubscribeTeams } from '../../hooks/team/useSubscribeTeams';
+import { useSessionCode } from '../../hooks/common/useSessionCode';
+import { useSubscribeSession } from '../../hooks/session/useSubscribeSession';
+import { useEndGame } from '../../hooks/session/useEndGame';
 import { playBeep } from '../../utils/playBeep';
 import { useNavigate } from 'react-router-dom';
-import { useSessionCode } from '../../hooks/useSessionCode';
-import useSubscribeSession from '../../hooks/Game/useSubscribeSession';
-import { useEndGame } from '../../hooks/Game/useEndGame';
 
 export default function GamePage() {
   const code = useSessionCode();
-  const team = useTeam();
+  const team = useAssignedTeam();
   const navigate = useNavigate();
   const sessionData = useSubscribeSession();
   const teamsData = useSubscribeTeams();
@@ -27,9 +26,6 @@ export default function GamePage() {
   const [showEndModal, setShowEndModal] = useState(false);
   const [gameOver, setGameOver] = useState(false);
 
-  console.log(teamsData);
-  console.log(sessionData);
-
   useEffect(() => {
     if (teamsData) {
       if (teamsData.teamA.players === teamsData.teamA.casualties || teamsData.teamB.players === teamsData.teamB.casualties) {
@@ -38,7 +34,7 @@ export default function GamePage() {
         playBeep(1, 3);
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [teamsData]);
 
   useEffect(() => {
@@ -76,9 +72,8 @@ export default function GamePage() {
   return (
     <Container>
       <Title $teampath={team}>G A M E</Title>
-      {/* <Time /> */}
       <TeamStatus teamsData={teamsData} />
-      <PlayerInput teamData={teamsData[team]} />
+      <CasualtiesInput teamData={teamsData![team]} />
       <Button fullWidth onClick={handleEndGame}>
         게임 종료
       </Button>

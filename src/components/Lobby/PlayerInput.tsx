@@ -1,13 +1,8 @@
 import styled from 'styled-components';
-import Button from '../common/Button';
+import { Button } from '../common/Button';
 import type { Team } from '../../types/teamType';
-import useTeam from '../../hooks/useTeam';
-import { useTeamApi } from '../../api/team';
+import { useUpdateTeamPlayer } from '../../hooks/team/useUpdateTeamPlayer';
 import { playBeep } from '../../utils/playBeep';
-
-interface PlayerInputProps {
-  teamData: Team | null;
-}
 
 const Container = styled.div`
   display: flex;
@@ -19,16 +14,14 @@ const Container = styled.div`
   font-size: 18px;
 `;
 
-export default function PlayerInput({ teamData }: PlayerInputProps) {
-  const team = useTeam();
-
-  const { updateTeamPlayersAPI } = useTeamApi();
+export function PlayerInput({ teamData }: { teamData: Team }) {
+  const { updateTeamPlayer } = useUpdateTeamPlayer();
 
   const handlePlayerChange = async (diff: number) => {
-    playBeep(0.1, 0.03);
     const currentPlayerCount = teamData!.players;
     const newPlayerCount = Math.max(0, Math.min(99, currentPlayerCount + diff));
-    await updateTeamPlayersAPI(team, newPlayerCount);
+    await updateTeamPlayer(newPlayerCount);
+    playBeep(0.1, 0.03);
   };
 
   return (

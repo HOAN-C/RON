@@ -1,23 +1,21 @@
-import useTeam from '../../hooks/useTeam';
-import useSubscribeTeams from '../../hooks/Lobby/useSubscribeTeams';
-
-import { useTeamApi } from '../../api/team';
+import { useState, useEffect } from 'react';
+import { useAssignedTeam } from '../../hooks/common/useAssignedTeam';
+import { useSubscribeTeams } from '../../hooks/team/useSubscribeTeams';
+import { useChangeTeamStatus } from '../../hooks/team/useChangeTeamStatus';
 
 import { Container, Title, ContentsContainer } from './LobbyPage.styled';
-import TeamStatus from '../../components/Lobby/TeamStatus';
-import PlayerInput from '../../components/Lobby/PlayerInput';
-import Button from '../../components/common/Button';
-import CountDown from '../../components/Lobby/CountDown';
+import { TeamStatus } from '../../components/Lobby/TeamStatus';
+import { PlayerInput } from '../../components/Lobby/PlayerInput';
+import { Button } from '../../components/common/Button';
+import { CountDown } from '../../components/Lobby/CountDown';
 
 import type { Team } from '../../types/teamType';
 
-import { useState, useEffect } from 'react';
-
 export default function LobbyPage() {
-  const team = useTeam();
+  const team = useAssignedTeam();
   const teamsData = useSubscribeTeams(); // 팀 상태 구독
 
-  const { updateTeamStatusAPI } = useTeamApi();
+  const { changeTeamStatus } = useChangeTeamStatus();
   const [ready, setReady] = useState<Team['status']>('not-ready');
   const [countDown, setCountDown] = useState<boolean>(false);
 
@@ -30,7 +28,7 @@ export default function LobbyPage() {
   }, [teamsData]);
 
   const handleReadyChange = () => {
-    updateTeamStatusAPI(team, ready === 'ready' ? 'not-ready' : 'ready');
+    changeTeamStatus();
     setReady(ready === 'ready' ? 'not-ready' : 'ready');
   };
 

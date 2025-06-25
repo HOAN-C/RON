@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { updateSessionAPI } from '../../api/session';
+import { updateSessionAPI } from '../../api/sessionAPI';
 
 //세션상태 empty로 변경하는 함수
 export const useCloseSession = () => {
