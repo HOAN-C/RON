@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import useTeam from '../../hooks/common/useAssignedTeam';
-import useSubscribeTeams from '../../hooks/Lobby/useSubscribeTeams';
-import { useChangeTeamStatus } from '../../hooks/Lobby/useChangeTeamStatus';
+import useSubscribeTeams from '../../hooks/team/useSubscribeTeams';
+import { useChangeTeamStatus } from '../../hooks/team/useChangeTeamStatus';
 
 import { Container, Title, ContentsContainer } from './LobbyPage.styled';
 import TeamStatus from '../../components/Lobby/TeamStatus';

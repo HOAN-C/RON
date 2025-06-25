@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { Team } from '../../types/teamType';
 import { subscribeSessionAPI } from '../../api/sessionAPI';
-import { useSessionCode } from '../common/useSessionCode';
+import useSessionCode from '../common/useSessionCode';
 
 export default function useSubscribeTeams() {
   const [teams, setTeams] = useState<{ teamA: Team; teamB: Team } | null>(null);

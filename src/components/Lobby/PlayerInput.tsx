@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import Button from '../common/Button';
 import type { Team } from '../../types/teamType';
-import { useUpdateTeamPlayer } from '../../hooks/Lobby/useUpdateTeamPlayer';
+import useUpdateTeamPlayer from '../../hooks/team/useUpdateTeamPlayer';
 import { playBeep } from '../../utils/playBeep';
 
 interface PlayerInputProps {

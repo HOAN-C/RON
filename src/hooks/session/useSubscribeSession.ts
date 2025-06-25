@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import type { Session } from '../../types/sessionType';
 import { subscribeSessionAPI } from '../../api/sessionAPI';
-import { useSessionCode } from '../common/useSessionCode';
+import useSessionCode from '../common/useSessionCode';
 
 export default function useSubscribeSession() {
   const [session, setSession] = useState<Session | null>(null);

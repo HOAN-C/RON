@@ -52,5 +52,5 @@ export const ReadyStatus = styled.div<ReadyStatusProps>`
   width: 90px;
   font-size: 20px;
   text-align: center;
-  color: ${({ $isready, theme }) => ($isready ? theme.colors.team.b : theme.colors.text.primary)};
+  color: ${({ $isready, theme }) => ($isready ? theme.colors.team.a : theme.colors.text.primary)};
 `;

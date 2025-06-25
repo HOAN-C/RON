@@ -4,6 +4,8 @@ import { getSessionAPI, setSessionAPI } from '../../api/sessionAPI';
 import { useCallback } from 'react';
 import { generateSessionCode } from '../../utils/generateSessionCode';
 import type { Session } from '../../types/sessionType';
+import { SESSION_STATE } from '../../constants/session';
+import { TEAM_STATUS } from '../../constants/team';
 
 interface CreateSessionResult {
   sessionCode: string;
@@ -12,10 +14,10 @@ interface CreateSessionResult {
 
 const initialSession: Session = {
   teams: {
-    teamA: { status: 'not-ready', casualties: 0, players: 0 },
-    teamB: { status: 'not-ready', casualties: 0, players: 0 },
+    teamA: { status: TEAM_STATUS.NOT_READY, casualties: 0, players: 0 },
+    teamB: { status: TEAM_STATUS.NOT_READY, casualties: 0, players: 0 },
   },
-  state: 'waiting',
+  state: SESSION_STATE.WAITING,
   createdAt: serverTimestamp(),
 };
 

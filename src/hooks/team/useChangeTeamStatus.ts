@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { updateTeamAPI, getTeamAPI } from '../../api/teamAPI';
-import { useSessionCode } from '../common/useSessionCode';
+import useSessionCode from '../common/useSessionCode';
+import { TEAM_STATUS } from '../../constants/team';
 import useAssignedTeam from '../common/useAssignedTeam';
 
 export const useChangeTeamStatus = () => {
@@ -11,11 +12,11 @@ export const useChangeTeamStatus = () => {
     try {
       const teamData = await getTeamAPI(code, team);
       if (!teamData) return false;
-      if (teamData.status === 'ready') {
-        const success = await updateTeamAPI(code, team, { status: 'not-ready' });
+      if (teamData.status === TEAM_STATUS.READY) {
+        const success = await updateTeamAPI(code, team, { status: TEAM_STATUS.NOT_READY });
         return success;
-      } else if (teamData.status === 'not-ready') {
-        const success = await updateTeamAPI(code, team, { status: 'ready' });
+      } else if (teamData.status === TEAM_STATUS.NOT_READY) {
+        const success = await updateTeamAPI(code, team, { status: TEAM_STATUS.READY });
         return success;
       }
       return false;

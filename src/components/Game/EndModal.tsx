@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import Button from '../common/Button';
 import { playBeep } from '../../utils/playBeep';
-import { useEndGame } from '../../hooks/Game/useEndGame';
+import { useEndGame } from '../../hooks/session/useEndGame';
 
 const Container = styled.div`
   position: fixed;

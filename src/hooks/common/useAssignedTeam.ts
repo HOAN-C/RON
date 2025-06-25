@@ -1,4 +1,4 @@
-import { useSessionCode } from './useSessionCode';
+import useSessionCode from './useSessionCode';
 import type { Session } from '../../types/sessionType';
 
 type TeamType = keyof Session['teams'];

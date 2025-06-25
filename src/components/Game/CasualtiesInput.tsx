@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import Button from '../common/Button';
 import type { Team } from '../../types/teamType';
-import { useUpdateTeamCasualties } from '../../hooks/Game/useUpdateTeamCasualties';
+import useUpdateTeamCasualties from '../../hooks/team/useUpdateTeamCasualties';
 import { playBeep } from '../../utils/playBeep';
 
 interface CasualtiesInputProps {

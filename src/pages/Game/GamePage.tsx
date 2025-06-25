@@ -8,10 +8,10 @@ import Button from '../../components/common/Button';
 import EndModal from '../../components/Game/EndModal';
 
 import useTeam from '../../hooks/common/useAssignedTeam';
-import useSubscribeTeams from '../../hooks/Lobby/useSubscribeTeams';
-import { useSessionCode } from '../../hooks/common/useSessionCode';
-import useSubscribeSession from '../../hooks/Game/useSubscribeSession';
-import { useEndGame } from '../../hooks/Game/useEndGame';
+import useSubscribeTeams from '../../hooks/team/useSubscribeTeams';
+import useSessionCode from '../../hooks/common/useSessionCode';
+import useSubscribeSession from '../../hooks/session/useSubscribeSession';
+import { useEndGame } from '../../hooks/session/useEndGame';
 import { playBeep } from '../../utils/playBeep';
 import { useNavigate } from 'react-router-dom';
 

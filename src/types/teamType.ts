@@ -1,5 +1,7 @@
+import type { TeamStatus } from '../constants/team';
+
 export interface Team {
-  status: 'ready' | 'not-ready';
+  status: TeamStatus;
   casualties: number;
   players: number;
 }

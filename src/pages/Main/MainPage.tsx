@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCreateSession } from '../../hooks/session/useCreateSession';
 import { useCloseSession } from '../../hooks/session/useCloseSession';
 import { useJoinSession } from '../../hooks/session/useJoinSession';
-import { useRedirectOnSessionState } from '../../hooks/useRedirectOnSessionState';
+import useRedirectOnSessionState from '../../hooks/common/useRedirectOnSessionState';
 
 import { Container, ContentsContainer, ButtonContainer, CreateContainer, SessionCode, SessionCodeDesc, JoinContainer, CodeInput, ErrorMsg } from './MainPage.styled';
 import Button from '../../components/common/Button';
