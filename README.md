@@ -61,6 +61,3 @@ export interface Session {
     - UI 애니메이션 추가
     - 사용자 이름 기능
 
-```
-
-```
