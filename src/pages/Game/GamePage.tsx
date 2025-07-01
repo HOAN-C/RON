@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 
 import { Container, Title } from './GamePage.styled';
+import { useWakeLock } from '../../hooks/common/useWakeLock';
 // import Time from '../../components/Game/Time';
 import { TeamStatus } from '../../components/Game/TeamStatus';
 import { CasualtiesInput } from '../../components/Game/CasualtiesInput';
@@ -18,6 +19,8 @@ export default function GamePage() {
   const code = useSessionCode();
   const team = useAssignedTeam();
   const navigate = useNavigate();
+  
+  useWakeLock();
   const sessionData = useSubscribeSession();
   const teamsData = useSubscribeTeams();
 

@@ -1,5 +1,4 @@
-import { serverTimestamp } from 'firebase/database';
-import { getSessionAPI, setSessionAPI } from '../../api/sessionAPI';
+import { getSessionAPI, setSessionAPI, deleteSessionAPI } from '../../api/sessionAPI';
 
 import { useCallback } from 'react';
 import { generateSessionCode } from '../../utils/generateSessionCode';
@@ -18,32 +17,61 @@ const initialSession: Session = {
     teamB: { status: TEAM_STATUS.NOT_READY, casualties: 0, players: 0 },
   },
   state: SESSION_STATE.WAITING,
-  createdAt: serverTimestamp(),
+  createdAt: new Date().toISOString(),
 };
 
-//세션 생성하는 함수
-//TODO: 로직 최적화
+const createNewSession = async () => {
+  const now = new Date();
+
+  // 새로운 세션 코드 생성 및 중복 확인
+  let newCode = generateSessionCode();
+  while (await getSessionAPI(newCode)) {
+    newCode = generateSessionCode();
+  }
+
+  // 새 세션 생성 및 저장
+  await setSessionAPI(newCode, initialSession);
+  localStorage.setItem('sessionCode', newCode);
+  localStorage.setItem('createdAt', now.toISOString());
+
+  return { code: newCode, createdAt: now };
+};
+
 export const useCreateSession = () => {
   const createSession = useCallback(async (): Promise<CreateSessionResult> => {
+    const storedCode = localStorage.getItem('sessionCode');
+    const createdAtStr = localStorage.getItem('createdAt');
+
     try {
-      // 기존에 사용한 방이 있는지
-      const storedCode = localStorage.getItem('sessionCode');
-      if (storedCode) {
-        await setSessionAPI(storedCode, initialSession); //새 세션 생성
+      //⚠️ Beta 버전 사용자의 경우 createdAt이 없어 예외 처리. 서비스 출시 1달 뒤 삭제 ⚠️
+      if (!createdAtStr && storedCode) {
+        await deleteSessionAPI(storedCode);
+        const { code } = await createNewSession();
+        return { sessionCode: code };
+      }
+
+      // 기존 사용자인 경우
+      if (storedCode && createdAtStr) {
+        const now = new Date();
+        const createdAt = new Date(createdAtStr);
+        const sevenDays = 7 * 24 * 60 * 60 * 1000;
+        const isExpired = now.getTime() - createdAt.getTime() > sevenDays;
+
+        // 만료된 경우 새 세션 생성
+        if (isExpired) {
+          await deleteSessionAPI(storedCode);
+          const { code } = await createNewSession();
+          return { sessionCode: code };
+        }
+
+        // 만료되지 않은 경우 코드 재발급 없이 기존 세션 재사용
+        await setSessionAPI(storedCode, initialSession);
         return { sessionCode: storedCode };
       }
 
-      //기존에 사용한 방이 없으면 새로 생성
-      let newCode = generateSessionCode(); //새 코드 생성
-      while (await getSessionAPI(newCode)) {
-        //해당 코드의 세션이 있는지 확인
-        newCode = generateSessionCode();
-      }
-      //해당 코드의 세션이 없으면 새로 생성
-      await setSessionAPI(newCode, initialSession); //새 세션 생성
-      localStorage.setItem('sessionCode', newCode);
-
-      return { sessionCode: newCode };
+      // 새로운 사용자인 경우
+      const { code } = await createNewSession();
+      return { sessionCode: code };
     } catch (error) {
       console.error('Error creating session:', error);
       return { sessionCode: '', error: '세션 생성에 실패했습니다.' };
