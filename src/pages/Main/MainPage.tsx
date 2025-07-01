@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCreateSession } from '../../hooks/session/useCreateSession';
 import { useCloseSession } from '../../hooks/session/useCloseSession';
 import { useJoinSession } from '../../hooks/session/useJoinSession';
-import { useRedirectOnSessionState } from '../../hooks/common/useRedirectOnSessionState';
+import { useAutoRouting } from '../../hooks/common/useAutoRouting';
 
 import { Container, ContentsContainer, ButtonContainer, CreateContainer, SessionCode, SessionCodeDesc, JoinContainer, CodeInput, ErrorMsg } from './MainPage.styled';
 import { Button } from '../../components/common/Button';
@@ -27,7 +27,7 @@ export default function MainPage() {
 
   const [error, setError] = useState<string | null>(null); // 오류 메시지
 
-  useRedirectOnSessionState(sessionCode, 'ready', sessionCode => `/lobby/${sessionCode}`);
+  useAutoRouting(sessionCode);
 
   const handleCreateSession = async () => {
     setCreateFormOpen(true);
