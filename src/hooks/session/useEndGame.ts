@@ -10,6 +10,10 @@ export const useEndGame = () => {
   const code = useSessionCode();
 
   const endGame = useCallback(async (): Promise<boolean> => {
+    if (!code) {
+      return false;
+    }
+
     try {
       await updateSessionAPI(code, {
         state: SESSION_STATE.READY,
