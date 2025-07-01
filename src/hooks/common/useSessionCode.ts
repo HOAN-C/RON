@@ -6,6 +6,6 @@ import { useParams } from 'react-router-dom';
  */
 export function useSessionCode() {
   const { code } = useParams<{ code: string }>();
-  if (!code) return null;
+  if (!code) return '';
   return code;
 }
