@@ -2,16 +2,24 @@ import { useState, useEffect } from 'react';
 import { useAssignedTeam } from '../../hooks/common/useAssignedTeam';
 import { useSubscribeTeams } from '../../hooks/team/useSubscribeTeams';
 import { useChangeTeamStatus } from '../../hooks/team/useChangeTeamStatus';
+import { useSessionCode } from '../../hooks/common/useSessionCode';
 
 import { Container, Title, ContentsContainer } from './LobbyPage.styled';
 import { TeamStatus } from '../../components/Lobby/TeamStatus';
 import { PlayerInput } from '../../components/Lobby/PlayerInput';
 import { Button } from '../../components/common/Button';
 import { CountDown } from '../../components/Lobby/CountDown';
+import { useGetSession } from '../../hooks/session/useGetSession';
+import { useNavigate } from 'react-router-dom';
 
 import type { Team } from '../../types/teamType';
 
 export default function LobbyPage() {
+  const code = useSessionCode();
+
+  const navigate = useNavigate();
+  const sessionData = useGetSession(null);
+
   const team = useAssignedTeam();
   const teamsData = useSubscribeTeams(); // 팀 상태 구독
 
@@ -19,7 +27,11 @@ export default function LobbyPage() {
   const [ready, setReady] = useState<Team['status']>('not-ready');
   const [countDown, setCountDown] = useState<boolean>(false);
 
-  //TODO: session의 state 값이 ready 가 아니면 해당 state값으로 페이지 이동. Hook으로 개발 가능할 듯
+  useEffect(() => {
+    if (sessionData?.state === 'running') {
+      navigate(`/game/${code}`);
+    }
+  }, [sessionData, code, navigate]);
 
   useEffect(() => {
     if (teamsData && teamsData.teamA.status === 'ready' && teamsData.teamB.status === 'ready') {

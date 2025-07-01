@@ -4,11 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import { useCreateSession } from '../../hooks/session/useCreateSession';
 import { useCloseSession } from '../../hooks/session/useCloseSession';
 import { useJoinSession } from '../../hooks/session/useJoinSession';
-import { useRedirectOnSessionState } from '../../hooks/common/useRedirectOnSessionState';
+import { useAutoRouting } from '../../hooks/common/useAutoRouting';
 
 import { Container, ContentsContainer, ButtonContainer, CreateContainer, SessionCode, SessionCodeDesc, JoinContainer, CodeInput, ErrorMsg } from './MainPage.styled';
 import { Button } from '../../components/common/Button';
 import { MainTitle } from '../../components/Main/MainTitle';
+import { DonationModal } from '../../components/Main/DonationModal';
 
 export default function MainPage() {
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ export default function MainPage() {
   const { closeSession } = useCloseSession();
   const { joinSession } = useJoinSession();
 
+  const [showDonationModal, setShowDonationModal] = useState(false);
   const [createFormOpen, setCreateFormOpen] = useState(false); // 생성 폼 오픈 상태
   const [joinFormOpen, setJoinFormOpen] = useState(false); // 참가 폼 오픈 상태
 
@@ -27,7 +29,7 @@ export default function MainPage() {
 
   const [error, setError] = useState<string | null>(null); // 오류 메시지
 
-  useRedirectOnSessionState(sessionCode, 'ready', sessionCode => `/lobby/${sessionCode}`);
+  useAutoRouting(sessionCode);
 
   const handleCreateSession = async () => {
     setCreateFormOpen(true);
@@ -151,6 +153,10 @@ export default function MainPage() {
           </JoinContainer>
         )}
       </ContentsContainer>
+      <Button variant="secondary" onClick={() => setShowDonationModal(true)}>
+        ☕️
+      </Button>
+      {showDonationModal && <DonationModal onCancel={() => setShowDonationModal(false)} />}
     </Container>
   );
 }

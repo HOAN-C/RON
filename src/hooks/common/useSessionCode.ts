@@ -6,6 +6,6 @@ import { useParams } from 'react-router-dom';
  */
 export function useSessionCode() {
   const { code } = useParams<{ code: string }>();
-  if (!code) throw new Error('Session code not found');
+  if (!code) return null;
   return code;
 }
