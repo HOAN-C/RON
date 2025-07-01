@@ -1,10 +1,10 @@
 import styled from 'styled-components';
 import { Button } from '../common/Button';
-import { playBeep } from '../../utils/playBeep';
-import { useEndGame } from '../../hooks/session/useEndGame';
 
 const Container = styled.div`
   position: fixed;
+  top: 0%;
+
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -46,22 +46,19 @@ interface EndModalProps {
   onCancel: () => void;
 }
 
-export function EndModal({ onCancel }: EndModalProps) {
-  const { endGame } = useEndGame();
-
-  const handleEndGame = () => {
-    playBeep(1, 3);
-    endGame();
-    onCancel();
+export function DonationModal({ onCancel }: EndModalProps) {
+  const handleEndGame = async () => {
+    await navigator.clipboard.writeText('3333209606356 카카오뱅크');
   };
 
   return (
     <Container>
-      <Title>게임 종료</Title>
-      <SubTitle>아직 생존 인원이 남아있습니다.</SubTitle>
+      <Title>후원 계좌</Title>
+      <SubTitle>☕️ 커피 한 잔 사주시겠습니까? 🙇‍♂️</SubTitle>
+      <SubTitle>3333209606356 카카오뱅크</SubTitle>
       <ButtonContainer>
         <Button fullWidth variant="primary" onClick={handleEndGame}>
-          종료
+          복사
         </Button>
         <Button fullWidth variant="secondary" onClick={onCancel}>
           취소
@@ -71,4 +68,4 @@ export function EndModal({ onCancel }: EndModalProps) {
   );
 }
 
-export default EndModal;
+export default DonationModal;
