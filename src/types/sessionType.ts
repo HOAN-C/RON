@@ -7,5 +7,5 @@ export interface Session {
     teamB: Team;
   };
   state: SessionState;
-  createdAt: number | object;
+  createdAt: string;
 }

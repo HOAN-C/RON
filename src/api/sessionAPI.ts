@@ -1,5 +1,5 @@
 import { db } from '../libs/config';
-import { ref, get, set, update, onValue, off } from 'firebase/database';
+import { ref, get, set, update, onValue, off, remove } from 'firebase/database';
 
 import type { Session } from '../types/sessionType';
 
@@ -30,6 +30,16 @@ export const updateSessionAPI = async (code: string, session: Partial<Session>):
     return true;
   } catch (error) {
     console.error('Error updating session:', error);
+    return null;
+  }
+};
+
+export const deleteSessionAPI = async (code: string): Promise<boolean | null> => {
+  try {
+    await remove(ref(db, `sessions/${code}`));
+    return true;
+  } catch (error) {
+    console.error('Error deleting session:', error);
     return null;
   }
 };
