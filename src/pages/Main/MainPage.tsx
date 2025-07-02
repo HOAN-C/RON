@@ -9,7 +9,7 @@ import { useAutoRouting } from '../../hooks/common/useAutoRouting';
 import { Container, ContentsContainer, ButtonContainer, CreateContainer, SessionCode, SessionCodeDesc, JoinContainer, CodeInput, ErrorMsg } from './MainPage.styled';
 import { Button } from '../../components/common/Button';
 import { MainTitle } from '../../components/Main/MainTitle';
-import { DonationModal } from '../../components/Main/DonationModal';
+// import { DonationModal } from '../../components/Main/DonationModal';
 
 export default function MainPage() {
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ export default function MainPage() {
   const { closeSession } = useCloseSession();
   const { joinSession } = useJoinSession();
 
-  const [showDonationModal, setShowDonationModal] = useState(false);
+  // const [showDonationModal, setShowDonationModal] = useState(false);
   const [createFormOpen, setCreateFormOpen] = useState(false); // 생성 폼 오픈 상태
   const [joinFormOpen, setJoinFormOpen] = useState(false); // 참가 폼 오픈 상태
 
@@ -153,10 +153,10 @@ export default function MainPage() {
           </JoinContainer>
         )}
       </ContentsContainer>
-      <Button variant="secondary" onClick={() => setShowDonationModal(true)}>
+      {/* <Button variant="secondary" onClick={() => setShowDonationModal(true)}>
         ☕️
       </Button>
-      {showDonationModal && <DonationModal onCancel={() => setShowDonationModal(false)} />}
+      {showDonationModal && <DonationModal onCancel={() => setShowDonationModal(false)} />} */}
     </Container>
   );
 }

@@ -4,8 +4,8 @@
   "description": "RON - Real-time Online Negotiation",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "background_color": "#0e0e0e",
+  "theme_color": "#0e0e0e",
   "icons": [
     {
       "src": "/icon-192.png",
