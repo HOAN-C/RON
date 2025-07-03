@@ -26,7 +26,7 @@ const Title = styled.h2`
 `;
 
 const SubTitle = styled.h2`
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 400;
   text-align: center;
   letter-spacing: 3px;
@@ -53,12 +53,14 @@ export function DonationModal({ onCancel }: EndModalProps) {
 
   return (
     <Container>
-      <Title>후원 계좌</Title>
-      <SubTitle>☕️ 커피 한 잔 사주시겠습니까? 🙇‍♂️</SubTitle>
+      <Title>문의 및 후원 계좌</Title>
+      <SubTitle>응원하고 싶다면 후원 부탁드려요! 🙇‍♂️</SubTitle>
       <SubTitle>3333209606356 카카오뱅크</SubTitle>
+      <SubTitle>문의</SubTitle>
+      <SubTitle>hoan.c9907@gmail.com</SubTitle>
       <ButtonContainer>
         <Button fullWidth variant="primary" onClick={handleEndGame}>
-          복사
+          계좌 복사
         </Button>
         <Button fullWidth variant="secondary" onClick={onCancel}>
           취소
