@@ -18,24 +18,37 @@ const TimeDisplay = styled.div`
   font-weight: 300;
 `;
 
-const Time = () => {
+interface TimeProps {
+  startTime?: string;
+}
+
+const Time = ({ startTime }: TimeProps) => {
   const [seconds, setSeconds] = useState(0);
 
   useEffect(() => {
+    if (!startTime) return;
+
+    const calculateInitialSeconds = () => {
+      const startTimeMs = new Date(startTime).getTime();
+      const nowMs = new Date().getTime();
+      return Math.floor((nowMs - startTimeMs) / 1000);
+    };
+
+    setSeconds(calculateInitialSeconds());
+
     const timer = setInterval(() => {
       setSeconds(prev => prev + 1);
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [startTime]);
 
   const formatTime = (totalSeconds: number) => {
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
 
     const pad = (num: number) => String(num).padStart(2, '0');
-    return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+    return `${pad(minutes)}:${pad(seconds)}`;
   };
 
   return (
