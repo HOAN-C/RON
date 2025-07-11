@@ -6,16 +6,17 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: ${({ theme }) => theme.colors.text.secondary};
-  width: 150px;
+  color: ${({ theme }) => theme.colors.text.primary};
+  width: 100px;
+  margin-bottom: 10px;
+  padding: 5px;
 `;
 
 const TimeDisplay = styled.div`
-  font-size: 1.5rem;
-  font-weight: bold;
+  font-size: 1.7rem;
+  font-weight: 300;
   width: 150px;
   text-align: center;
-  font-weight: 300;
 `;
 
 interface TimeProps {
@@ -28,16 +29,19 @@ const Time = ({ startTime }: TimeProps) => {
   useEffect(() => {
     if (!startTime) return;
 
-    const calculateInitialSeconds = () => {
+    const calculateElapsedSeconds = () => {
       const startTimeMs = new Date(startTime).getTime();
       const nowMs = new Date().getTime();
-      return Math.floor((nowMs - startTimeMs) / 1000);
+      const elapsed = Math.floor((nowMs - startTimeMs) / 1000);
+      return elapsed > 0 ? elapsed : 0; // 음수 시간 방지
     };
 
-    setSeconds(calculateInitialSeconds());
+    // 초기 시간 설정
+    setSeconds(calculateElapsedSeconds());
 
+    // 1초마다 경과 시간을 다시 계산하여 동기화
     const timer = setInterval(() => {
-      setSeconds(prev => prev + 1);
+      setSeconds(calculateElapsedSeconds());
     }, 1000);
 
     return () => clearInterval(timer);

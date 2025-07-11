@@ -14,7 +14,7 @@ export const Title = styled.h2<{ $teampath?: 'teamA' | 'teamB' | 'none' }>`
   font-weight: 300;
   text-align: center;
   letter-spacing: 3px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 
   color: ${({ $teampath, theme }) => {
     switch ($teampath) {
