@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 import { Container, Title } from './GamePage.styled';
 import { useWakeLock } from '../../hooks/common/useWakeLock';
-// import Time from '../../components/Game/Time';
+import Time from '../../components/Game/Time';
 import { TeamStatus } from '../../components/Game/TeamStatus';
 import { CasualtiesInput } from '../../components/Game/CasualtiesInput';
 import { Button } from '../../components/common/Button';
@@ -19,10 +19,11 @@ export default function GamePage() {
   const code = useSessionCode();
   const team = useAssignedTeam();
   const navigate = useNavigate();
-  
+
   useWakeLock();
   const sessionData = useSubscribeSession();
   const teamsData = useSubscribeTeams();
+  console.log(sessionData?.createdAt);
 
   const { endGame } = useEndGame();
 
@@ -75,6 +76,7 @@ export default function GamePage() {
   return (
     <Container>
       <Title $teampath={team}>G A M E</Title>
+      <Time startTime={sessionData?.createdAt} />
       <TeamStatus teamsData={teamsData} />
       <CasualtiesInput teamData={teamsData![team]} />
       <Button fullWidth onClick={handleEndGame}>
